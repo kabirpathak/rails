@@ -6,6 +6,7 @@ require "active_support/testing/autorun"
 require "rails/configuration"
 require "active_support/test_case"
 require "minitest/mock"
+require "pry"
 
 module Rails
   module Configuration
@@ -69,12 +70,13 @@ module Rails
       private
         def assert_playback(msg_names, args)
           mock = Minitest::Mock.new
+          expectations = []
           Array(msg_names).each do |msg_name|
-            mock.expect msg_name, nil, [args]
-            self.assertions += 1
+            expectations << mock.expect(msg_name, nil, [args])
           end
           @stack.merge_into(mock)
           mock.verify
+          self.assertions += expectations.size
         end
     end
   end
